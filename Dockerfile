@@ -34,5 +34,10 @@ RUN composer install --no-dev --prefer-dist
 # Se asegura de que las reescrituras de URL funcionen si usas .htaccess
 RUN a2enmod rewrite
 
-# 9. EXPOSICIÓN Y ARRANQUE (Apache es el servidor predeterminado)
+# 9. SOBREESCRIBIR LA CONFIGURACIÓN DE PUERTO DE APACHE
+# Esta línea le dice a Apache que escuche en el puerto que Render le pasa a través de la variable de entorno $PORT
+ENV PORT 10000
+RUN sed -i 's/Listen 80/Listen ${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-enabled/*.conf
+
+# 10. EXPOSICIÓN Y ARRANQUE (Apache es el servidor predeterminado)
 EXPOSE 80

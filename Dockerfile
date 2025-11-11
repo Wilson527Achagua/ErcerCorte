@@ -34,7 +34,7 @@ RUN composer install --no-dev --prefer-dist
 
 # 8. INICIALIZAR BASE DE DATOS: Ejecuta el script de seed
 # Este comando solo corre durante la compilación, creando el usuario admin
-RUN php config/seed_db.php
+# RUN php config/seed_db.php
 
 # 9. CONFIGURAR APACHE
 # Se asegura de que las reescrituras de URL funcionen si usas .htaccess

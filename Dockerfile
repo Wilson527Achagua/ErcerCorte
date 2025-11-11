@@ -1,12 +1,14 @@
 # 1. IMAGEN BASE: Usamos una imagen que ya trae PHP
 FROM php:8.1-apache
 
-# 2. INSTALAR DEPENDENCIAS DE SISTEMA (para librerías como PHPMailer y MongoDB)
-# Instalamos git, unzip (para composer) y las extensiones necesarias
+# 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL)
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libxml2-dev
+    libxml2-dev \
+    libssl-dev \
+    openssl \
+    && rm -rf /var/lib/apt/lists/* # Limpieza al final
 
 # 3. INSTALAR EXTENSIONES DE PHP: Necesarias para MongoDB y ZIP
 RUN docker-php-ext-install soap bcmath pdo_mysql \

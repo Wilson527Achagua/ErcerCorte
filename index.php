@@ -1,6 +1,6 @@
 <?php
 require_once 'config/session.php';
-requireLogin();
+//requireLogin();
 require_once 'config/database.php';
 
 $db = new Database();

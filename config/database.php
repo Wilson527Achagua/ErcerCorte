@@ -1,7 +1,6 @@
 <?php
 
 // Importar las clases necesarias del driver de MongoDB para PHP
-// Esto es CRÍTICO para que el código reconozca las clases como Manager, BulkWrite, Query, etc.
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Query;
@@ -17,19 +16,43 @@ class Database {
     private $db;
     
     // Configura tu base de datos aquí
-    private $databaseName = "inventory_system";
+    // NOTA: Si usas la URI de Atlas, esta línea solo define el nombre
+    private $databaseName = "inventory_system"; 
     
     public function __construct() {
         try {
+            // --- MODIFICACIÓN CLAVE PARA COMPATIBILIDAD CON RENDER Y LOCAL ---
+            
+            // 1. Obtener la URI de MongoDB Atlas de la variable de entorno (Render)
+            // Render inyecta la variable MONGODB_URI.
+            $mongoURI = getenv('MONGODB_URI');
+            
+            // 2. Definir la conexión. Si $mongoURI está vacío, usa localhost (para desarrollo local)
+            if (empty($mongoURI)) {
+                // Cadena de conexión local de respaldo (tu XAMPP)
+                $connectionString = "mongodb://localhost:27017"; 
+            } else {
+                // Cadena de conexión de MongoDB Atlas
+                $connectionString = $mongoURI;
+            }
+            
             // Establece la conexión con el servidor de MongoDB
-            // Asegúrate de que esta cadena de conexión sea correcta para tu entorno
-            $this->client = new Manager("mongodb://localhost:27017");
+            $this->client = new Manager($connectionString);
             $this->db = $this->databaseName;
+            
+            // --- FIN MODIFICACIÓN ---
+            
         } catch (Exception $e) {
             // Detiene la ejecución si la conexión falla
             die("Error de conexión a MongoDB: " . $e->getMessage());
         }
     }
+    
+    // --- NUEVO MÉTODO AÑADIDO (necesario para el seeding del administrador) ---
+    public function getManager(): Manager {
+        return $this->client;
+    }
+    // --- FIN NUEVO MÉTODO ---
     
     public function getConnection() {
         return $this->client;
@@ -41,7 +64,6 @@ class Database {
     
     /**
      * Ejecuta una consulta FIND y devuelve los documentos como un array de PHP.
-     * Esta corrección es crucial para que los foreach en PHP (login.php, edit.php) funcionen.
      * * @param string $collection Nombre de la colección (ej. 'clients', 'users').
      * @param array $filter Criterios de búsqueda (ej. ['_id' => $objectId]).
      * @param array $options Opciones de consulta (ej. ['limit' => 1]).
@@ -69,7 +91,6 @@ class Database {
     
        // 1. Añadimos el documento a la operación de escritura
        $id = $bulk->insert($document); 
-       // CRÍTICO: El método insert() del BulkWrite devuelve el ObjectId generado.
     
        $namespace = $this->db . "." . $collection;
     
@@ -91,12 +112,9 @@ class Database {
      * @param array $options Opciones (ej. 'multi' => true/false).
      * @return MongoDB\Driver\WriteResult Resultado de la operación.
      */
-    // En tu archivo '../config/database.php'
 public function update(string $collection, array $filter, array $update_operators) {
     $bulk = new MongoDB\Driver\BulkWrite;
     
-    // El '['update' => 1]' es el operador de actualización que indica que no es un reemplazo completo.
-    // Usamos ['multi' => false, 'upsert' => false] como opciones por defecto.
     $bulk->update($filter, $update_operators, ['multi' => false, 'upsert' => false]); 
     
     $namespace = $this->db . "." . $collection;

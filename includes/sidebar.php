@@ -4,7 +4,7 @@
     </div>
     
     <nav class="sidebar-nav">
-        <a href="/ErcerSeme/index.php" class="nav-item">
+        <a href="/index.php" class="nav-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -12,7 +12,7 @@
             <span>Dashboard</span>
         </a>
         
-        <a href="/ErcerSeme/clients/index.php" class="nav-item">
+        <a href="/clients/index.php" class="nav-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
@@ -22,7 +22,7 @@
             <span>Clientes</span>
         </a>
         
-        <a href="/ErcerSeme/products/index.php" class="nav-item">
+        <a href="/products/index.php" class="nav-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -31,7 +31,7 @@
             <span>Productos</span>
         </a>
         
-        <a href="/ErcerSeme/sales/index.php" class="nav-item">
+        <a href="/sales/index.php" class="nav-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -40,7 +40,7 @@
             <span>Ventas</span>
         </a>
         
-        <a href="/ErcerSeme/reports/generar_pdf_final.php" class="nav-item" target="_blank">
+        <a href="/reports/generar_pdf_final.php" class="nav-item" target="_blank">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
@@ -53,7 +53,7 @@
     </nav>
     
     <div class="sidebar-footer">
-        <a href="/ErcerSeme/logout.php" class="nav-item">
+        <a href="/logout.php" class="nav-item">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>

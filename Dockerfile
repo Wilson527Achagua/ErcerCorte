@@ -32,9 +32,12 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 RUN composer install --no-dev --prefer-dist
 
-# 8. INICIALIZAR BASE DE DATOS: Ejecuta el script de seed
-# Este comando solo corre durante la compilación, creando el usuario admin
-# RUN php config/seed_db.php
+# 8. SOLUCIÓN AL ERROR DE PERMISOS DE UPLOADS
+# Crea la carpeta 'uploads' si no existe y le da permisos de escritura al usuario web.
+RUN mkdir -p /var/www/html/uploads \
+    && chown -R www-data:www-data /var/www/html/uploads \
+    && chmod -R 775 /var/www/html/uploads
+
 
 # 9. CONFIGURAR APACHE
 # Se asegura de que las reescrituras de URL funcionen si usas .htaccess

@@ -3,7 +3,7 @@
         "mongodb/mongodb": "^2.1",
         "tecnickcom/tcpdf": "^6.10",
         "dompdf/dompdf": "^3.1",
-        "phpmailer/phpmailer": "^7.0"
+        "phpmailer/phpmailer": "^7.0",
         "cloudinary/cloudinary_php": "^2.11"
     }
 }

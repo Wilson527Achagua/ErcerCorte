@@ -1,29 +1,54 @@
 <?php
+// products/create.php
+
 require_once '../config/session.php';
 requireLogin();
 require_once '../config/database.php';
+// 1. INCLUIR LAS LIBRERÍAS DE CLOUDINARY (necesita estar después de composer.json)
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Cloudinary\Configuration\Configuration;
+use Cloudinary\Api\Upload\UploadApi;
 
 $success = '';
 $error = '';
 
+// 2. CONFIGURACIÓN DE CLOUDINARY USANDO VARIABLES DE ENTORNO DE RENDER
+Configuration::instance([
+    'cloud' => getenv('CLOUDINARY_CLOUD_NAME'),
+    'api_key' => getenv('CLOUDINARY_API_KEY'),
+    'api_secret' => getenv('CLOUDINARY_API_SECRET')
+]);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = new Database();
     
-    // Manejar la carga de imagen
-    $imageName = '';
+    // El valor predeterminado será null si no hay imagen o si la subida falla
+    $imageUrl = null; 
+    
+    // 3. MANEJAR LA CARGA DE IMAGEN A CLOUDINARY
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === 0) {
-        $uploadDir = '../uploads/';
-        if (!file_exists($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
         
-        $imageName = uniqid() . '_' . basename($_FILES['imagen']['name']);
-        $uploadFile = $uploadDir . $imageName;
-        
-        if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
-            $error = 'Error al subir la imagen';
+        try {
+            // Subir el archivo temporal a Cloudinary
+            $uploadResult = (new UploadApi())->upload(
+                $_FILES['imagen']['tmp_name'],
+                [
+                    'folder' => 'ercer_inventario', // Carpeta en Cloudinary
+                    'public_id' => uniqid('prod_') // ID público único
+                ]
+            );
+
+            // Obtener la URL persistente
+            $imageUrl = $uploadResult['secure_url'];
+
+        } catch (\Exception $e) {
+            // Si la subida a Cloudinary falla (ej. credenciales malas)
+            $error = 'Error al subir la imagen a la nube: ' . $e->getMessage();
         }
     }
+    
+    // 4. ELIMINAMOS EL CÓDIGO VIEJO DE move_uploaded_file Y mkdir
     
     if (!$error) {
         $document = [
@@ -32,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'descripcion' => $_POST['descripcion'],
             'cantidad' => (int)$_POST['cantidad'],
             'valor_unitario' => (float)$_POST['valor_unitario'],
-            'imagen' => $imageName,
+            'imagen' => $imageUrl, // <-- Guardamos la URL de Cloudinary
             'fecha_registro' => new MongoDB\BSON\UTCDateTime()
         ];
         
@@ -62,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="dashboard-container">
             <div class="page-header">
                 <h1 class="page-title">Registrar Nuevo Producto</h1>
-                <a href="/ErcerSeme/products/index.php" class="btn btn-secondary">Volver</a>
+                <a href="/products/index.php" class="btn btn-secondary">Volver</a>
             </div>
             
             <?php if ($success): ?>

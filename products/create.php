@@ -4,7 +4,7 @@
 require_once '../config/session.php';
 requireLogin();
 require_once '../config/database.php';
-// 1. INCLUIR LAS LIBRERÍAS DE CLOUDINARY (necesita estar después de composer.json)
+// 1. INCLUIR LAS LIBRERÍAS DE CLOUDINARY
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Cloudinary\Configuration\Configuration;
@@ -13,12 +13,9 @@ use Cloudinary\Api\Upload\UploadApi;
 $success = '';
 $error = '';
 
-// 2. CONFIGURACIÓN DE CLOUDINARY USANDO VARIABLES DE ENTORNO DE RENDER
-Configuration::instance([
-    'cloud' => getenv('CLOUDINARY_CLOUD_NAME'),
-    'api_key' => getenv('CLOUDINARY_API_KEY'),
-    'api_secret' => getenv('CLOUDINARY_API_SECRET')
-]);
+// 2. CONFIGURACIÓN DE CLOUDINARY AUTOMÁTICA
+// La librería leerá automáticamente la variable de entorno CLOUDINARY_URL
+Configuration::instance();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = new Database();
@@ -43,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $imageUrl = $uploadResult['secure_url'];
 
         } catch (\Exception $e) {
-            // Si la subida a Cloudinary falla (ej. credenciales malas)
+            // Si la subida a Cloudinary falla (ej. CLOUDINARY_URL incorrecta)
             $error = 'Error al subir la imagen a la nube: ' . $e->getMessage();
         }
     }

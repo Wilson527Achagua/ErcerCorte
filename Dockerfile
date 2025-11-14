@@ -1,13 +1,19 @@
 # 1. IMAGEN BASE: Usamos una imagen que ya trae PHP
 FROM php:8.1-apache
 
-# 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL)
+# 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL y utilidades)
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libxml2-dev \
     libssl-dev \
     openssl \
+    libgbm-dev \
+    libfontconfig1 \
+    libgtk-3-0 \
+    libsecret-1-0 \
+    libnss3 \
+    libxshmfence-dev \
     && rm -rf /var/lib/apt/lists/* # Limpieza al final
 
 # 3. INSTALAR EXTENSIONES DE PHP: Necesarias para MongoDB y ZIP
@@ -38,11 +44,25 @@ RUN mkdir -p /var/www/html/uploads \
     && chown -R www-data:www-data /var/www/html/uploads \
     && chmod -R 775 /var/www/html/uploads
     
-# 9. INSTALAR NODE.JS (PARA GENERACIÓN DE PDF)
+# 9. INSTALAR NODE.JS (PARA GENERACIÓN DE PDF) Y PUPPETEER
 # Instalamos la última versión de Node.js y NPM
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm
+
+# Instalar Puppeteer y sus dependencias de Chrome
+WORKDIR /var/www/html/utils
+# NOTA: Debes tener un package.json con puppeteer en utils
+# Asumimos que lo tienes o lo instalamos directamente si no existe.
+# Si tu generate_pdf.js está en /var/www/html/utils/, este es el lugar correcto.
+
+# Si tienes un package.json en /utils, usa:
+# RUN npm install
+
+# Si no tienes package.json, instala solo puppeteer aquí:
+RUN npm install puppeteer
+
+WORKDIR /var/www/html 
 
 # 10. CONFIGURAR APACHE
 # Se asegura de que las reescrituras de URL funcionen si usas .htaccess

@@ -1,5 +1,5 @@
 <?php
-// Archivo: /reports/generar_pdf_final.php
+// Archivo: /ErcerSeme/reports/generar_pdf_final.php
 // Este script ejecuta el proceso Node.js (Puppeteer) y MUESTRA el PDF en el navegador.
 
 require_once '../config/session.php';
@@ -7,22 +7,30 @@ requireLogin();
 
 // --- Definición de Rutas ---
 
-// 1. RUTA ABSOLUTA DEL SCRIPT NODE.JS (Ubicación correcta dentro del contenedor)
+// 1. RUTA ABSOLUTA CORREGIDA DEL SCRIPT NODE.JS
 $node_script = dirname(__DIR__) . '/utils/generate_pdf.js';
+$node_script = str_replace('\\', '/', $node_script);
 
-// 2. URL ACCESIBLE DEL HTML GENERADO POR PHP (CORREGIDA PARA RENDER)
-// $_SERVER['HTTP_HOST'] obtiene la URL pública del servicio de Render (ej. ercercorte.onrender.com)
-$html_url = 'http://' . $_SERVER['HTTP_HOST'] . '/reports/reporte_solo_html.php'; 
+// 2. URL ACCESIBLE DEL HTML GENERADO POR PHP
+// 🚨 CORRECCIÓN CLAVE: Usamos la URL pública del entorno Render, no localhost.
+$base_url = getenv('RENDER_EXTERNAL_URL'); 
+if (empty($base_url)) {
+    // Si no estamos en Render, usamos tu dominio local de prueba
+    $base_url = 'http://ercercorte.onrender.com'; 
+}
 
-// 3. RUTA ABSOLUTA DONDE SE GUARDARÁ EL PDF TEMPORAL 
+// 🚨 La URL que Puppeteer visitará DEBE ser pública y completa.
+$html_url = $base_url . '/reports/reporte_solo_html.php'; 
+
+// 3. RUTA ABSOLUTA DONDE SE GUARDARÁ EL PDF TEMPORAL (Usando la carpeta uploads)
 $pdf_path_temp = dirname(__DIR__) . '/uploads/reporte_' . uniqid() . '.pdf';
+$pdf_path_temp = str_replace('\\', '/', $pdf_path_temp); 
 
-// 4. RUTA AL EJECUTABLE DE NODE.JS (CORREGIDA PARA LINUX)
-// En Linux/Docker, 'node' está en el PATH
+// 4. RUTA ABSOLUTA AL EJECUTABLE DE NODE.JS (ELIMINADA)
+// En el contenedor de Docker, 'node' está en el PATH global. Usamos 'node'.
 $node_exe_path = 'node'; 
 
 // 5. Comando a ejecutar 
-// Se elimina la ruta de Windows y se usa la variable corregida
 $command = escapeshellarg($node_exe_path) . 
            " " . escapeshellarg($node_script) . 
            " " . escapeshellarg($html_url) . 
@@ -39,24 +47,28 @@ $output = implode("\n", $output_array);
 // --- Bloque Final: Descarga o Diagnóstico de Fallo ---
 
 if ($return_var === 0 && file_exists($pdf_path_temp)) {
-    // ÉXITO
+    // 1. ÉXITO: Forzar la DESCARGA
     header('Content-Description: File Transfer');
     header('Content-Type: application/pdf');
+    
+    // 🚨 MODIFICADO: Cambiar 'attachment' por 'inline' para mostrar en el navegador
     header('Content-Disposition: inline; filename="reporte_inventario_final.pdf"'); 
+    
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
     header('Content-Length: ' . filesize($pdf_path_temp));
     
-    // Enviar el archivo
+    // 2. Enviar el archivo
     readfile($pdf_path_temp);
     
-    // Limpiar el archivo temporal
+    // 3. Limpiar el archivo temporal de la carpeta uploads
     unlink($pdf_path_temp); 
     
     exit;
 } else {
-    // FALLO: Mostrar el diagnóstico
+    // FALLO: Mostrar el diagnóstico completo para ver el error de Node.js
+
     echo "<h1>Error Fatal en la Generación del PDF (Node.js)</h1>";
     echo "<p>No se pudo crear el archivo PDF. El proceso Node.js falló.</p>";
     

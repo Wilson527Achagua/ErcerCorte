@@ -1,5 +1,5 @@
 <?php
-// Archivo: /ErcerSeme/reports/reporte_solo_html.php
+// Archivo: /reports/reporte_solo_html.php
 // Este script genera el HTML limpio que Node.js leerá.
 
 //require_once '../config/session.php'; // Ajusta la ruta a tu session.php
@@ -9,9 +9,10 @@ require_once '../config/database.php'; // Ajusta la ruta a tu database.php
 $db = new Database();
 $products = $db->executeQuery('products', [], ['sort' => ['nombre' => 1]]);
 
-// --- Estilos CSS ---
+// --- Estilos CSS (Se mantiene igual) ---
 $css = '
 <style>
+    /* ... estilos ... */
     body { font-family: sans-serif; margin: 0; padding: 0; }
     .header { background-color: #7c3aed; color: white; padding: 15px; text-align: center; margin-bottom: 20px; }
     .header h1 { margin: 0; font-size: 24px; }
@@ -20,7 +21,7 @@ $css = '
         padding: 10px; 
         margin-bottom: 15px; 
         overflow: hidden; 
-        page-break-inside: avoid; /* Evita que el bloque se corte entre páginas */
+        page-break-inside: avoid;
     }
     .product-image {
         float: left;
@@ -53,10 +54,11 @@ foreach ($products as $product) {
     $descripcion = htmlspecialchars($product->descripcion ?? 'Sin descripción.');
     $cantidad = $product->cantidad ?? 0;
     $valor_unitario = number_format($product->valor_unitario ?? 0, 2);
-    $imagen_file = htmlspecialchars($product->imagen ?? '');
+    $imagen_file = htmlspecialchars($product->imagen ?? ''); 
     
-    // 🚨 RUTA RELATIVA WEB: El navegador de Puppeteer debe poder acceder a esta ruta.
-    $imagen_src = !empty($imagen_file) ? '../uploads/' . $imagen_file : 'placeholder.png'; 
+    // 🚨 CORRECCIÓN CLOUDINARY: Usar la URL completa (http/https) que está en la BD.
+    // Si la imagen existe, es una URL de Cloudinary; si no, es 'placeholder.png'.
+    $imagen_src = !empty($imagen_file) ? $imagen_file : 'placeholder.png'; 
 
     $html .= '
         <div class="product-block">

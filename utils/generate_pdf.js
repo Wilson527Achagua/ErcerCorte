@@ -19,16 +19,15 @@ if (!htmlUrl || !pdfPath) {
     try {
         // 1. Lanzar el navegador virtual (headless)
         browser = await puppeteer.launch({
-            // 🚨 CORRECCIÓN CLAVE PARA DOCKER/RENDER:
+            // 🚨 CORRECCIÓN CLAVE 1: Usar el ejecutable de Chrome instalado en el sistema
+            executablePath: '/usr/bin/google-chrome', 
+            // 🚨 CORRECCIÓN CLAVE 2: Argumentos necesarios para Docker/Render
             args: [
                 '--no-sandbox', 
                 '--disable-setuid-sandbox',
-                // Agregar esto para evitar problemas de memoria en entornos limitados
                 '--disable-dev-shm-usage', 
                 '--single-process'
             ],
-            // 🚨 INDICA A PUPPETEER QUE NO DESCARGUE CHROME, USARÁ EL QUE ESTÁ EN EL SISTEMA
-            executablePath: '/usr/bin/google-chrome' 
         });
         const page = await browser.newPage();
 

@@ -19,8 +19,16 @@ if (!htmlUrl || !pdfPath) {
     try {
         // 1. Lanzar el navegador virtual (headless)
         browser = await puppeteer.launch({
-            // Esto es importante para entornos XAMPP en Windows/Linux
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            // 🚨 CORRECCIÓN CLAVE PARA DOCKER/RENDER:
+            args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox',
+                // Agregar esto para evitar problemas de memoria en entornos limitados
+                '--disable-dev-shm-usage', 
+                '--single-process'
+            ],
+            // 🚨 INDICA A PUPPETEER QUE NO DESCARGUE CHROME, USARÁ EL QUE ESTÁ EN EL SISTEMA
+            executablePath: '/usr/bin/google-chrome' 
         });
         const page = await browser.newPage();
 

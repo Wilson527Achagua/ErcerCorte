@@ -48,13 +48,12 @@ RUN mkdir -p /var/www/html/uploads \
 # --- Instalar Node.js y NPM
 RUN apt-get update && apt-get install -y nodejs npm
 
-# --- Instalar Google Chrome (Corregido para evitar exit code 127)
-# 1. Obtener la clave GPG y guardarla
-RUN curl -sL https://dl.google.com/linux/linux_signing_key.pub -o /tmp/google.pub \
-    && apt-key add /tmp/google.pub
+# --- Instalar Google Chrome (Método Moderno para Clave GPG)
+# 1. Obtener la clave GPG y guardarla en el directorio de confianza
+RUN curl -sL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-chrome.gpg
 
 # 2. Agregar el repositorio de Chrome
-RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
 
 # 3. Actualizar e Instalar Chrome
 RUN apt-get update \

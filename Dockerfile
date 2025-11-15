@@ -1,4 +1,4 @@
- 1. IMAGEN BASE: Usamos una imagen que ya trae PHP
+#1. IMAGEN BASE: Usamos una imagen que ya trae PHP
 FROM php:8.1-apache
 
 # 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL, utilidades y dependencias de Chrome)

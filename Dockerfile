@@ -2,6 +2,7 @@
 FROM php:8.1-apache
 
 # 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL, utilidades y dependencias de Chrome)
+# Nota: 'libxshmfence-dev' es necesario para ciertos entornos headless de Puppeteer.
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libxshmfence-dev \
     wget \
     gnupg \
+    curl \
     && rm -rf /var/lib/apt/lists/* # Limpieza al final
 
 # 3. INSTALAR EXTENSIONES DE PHP: Necesarias para MongoDB y ZIP
@@ -42,14 +44,20 @@ RUN mkdir -p /var/www/html/uploads \
     && chown -R www-data:www-data /var/www/html/uploads \
     && chmod -R 775 /var/www/html/uploads
     
-# 9. INSTALAR NODE.JS, PUPPETEER Y CHROME (¡La parte clave!)
+# 9. INSTALAR NODE.JS, PUPPETEER Y CHROME (¡La parte clave y corregida!)
 # --- Instalar Node.js y NPM
 RUN apt-get update && apt-get install -y nodejs npm
 
-# --- Instalar Google Chrome (esencial para Puppeteer en Linux)
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
+# --- Instalar Google Chrome (Corregido para evitar exit code 127)
+# 1. Obtener la clave GPG y guardarla
+RUN curl -sL https://dl.google.com/linux/linux_signing_key.pub -o /tmp/google.pub \
+    && apt-key add /tmp/google.pub
+
+# 2. Agregar el repositorio de Chrome
+RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+
+# 3. Actualizar e Instalar Chrome
+RUN apt-get update \
     && apt-get install -y google-chrome-stable
 
 # --- Instalar Puppeteer en el directorio correcto

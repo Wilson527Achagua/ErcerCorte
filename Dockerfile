@@ -1,4 +1,4 @@
-# 1. IMAGEN BASE: Usamos una imagen que ya trae PHP
+ 1. IMAGEN BASE: Usamos una imagen que ya trae PHP
 FROM php:8.1-apache
 
 # 2. INSTALAR DEPENDENCIAS DE SISTEMA (Ahora incluimos librerías SSL, utilidades y dependencias de Chrome)
@@ -61,8 +61,8 @@ RUN apt-get update \
 
 # --- Instalar Puppeteer en el directorio correcto
 WORKDIR /var/www/html/utils
-# Esto asume que tienes un package.json con puppeteer en /utils
-RUN npm install
+# 🚨 CORRECCIÓN: Forzar la instalación para ignorar el conflicto React/vaul
+RUN npm install --force
 
 WORKDIR /var/www/html 
 

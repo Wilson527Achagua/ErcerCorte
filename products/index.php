@@ -29,6 +29,11 @@ const CLOUDINARY_TRANSFORMATION = 'w_300,h_180,c_fill';
             gap: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
+        .search-icon {
+            width: 24px; /* Tamaño fijo para que no se expanda */
+            height: 24px;
+            color: #999; /* Para darle un color discreto si es necesario */
+        }
         
         .search-bar input {
             flex: 1;

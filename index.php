@@ -21,61 +21,6 @@ $lowStockProducts = $db->executeQuery('products', ['cantidad' => ['$lt' => 10]],
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema de Inventario</title>
     <link rel="stylesheet" href="assets/style.css">
-    <style>
-        /* 1. LAYOUT DE LA CUADRÍCULA: Hace las tarjetas más compactas y responsivas */
-        .stats-grid {
-            display: grid;
-            /* Columnas flexibles: mínimo 250px de ancho, ocupan 1fr del espacio */
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        /* 2. TARJETA DE ESTADÍSTICA: Diseño compacto y color de texto */
-        .stat-card {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            border-radius: 12px;
-            /* CORRECCIÓN DE VISIBILIDAD: Asegura que el texto y el SVG se vean */
-            color: white; 
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 3. ÍCONO: Asegura que el SVG sea visible, de buen tamaño y contraste */
-        .stat-icon {
-            width: 56px; 
-            height: 56px;
-            min-width: 56px; /* Evita que se encoja */
-            margin-right: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            /* Fondo semi-transparente para un mejor contraste */
-            background-color: rgba(255, 255, 255, 0.15); 
-        }
-
-        .stat-icon svg {
-            width: 30px; /* Tamaño del SVG */
-            height: 30px;
-            /* El SVG hereda el color blanco del contenedor principal (.stat-card) */
-            stroke: currentColor; 
-        }
-
-        /* 4. CONTENIDO: Ajusta el tamaño de la fuente */
-        .stat-content h3 {
-            margin: 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .stat-number {
-            margin: 5px 0 0 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <?php include 'includes/sidebar.php'; ?>
